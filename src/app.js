@@ -2,7 +2,14 @@ const express = require('express');
 const path = require('path');
 const connectDB = require('./config/db');
 
+// Import routes 
+const indexRouter = require('./routes/index.routes');
+
 const app = express();
+
+// Cấu hình EJS
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'public'));
 
 // Connect to the database
 connectDB();
@@ -10,9 +17,12 @@ connectDB();
 // Serve static files from the 'public' directory inside 'src'
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Nếu muốn chuyển hướng root "/" về file index.html trong public:
+// Use routes
+app.use('/', indexRouter);
+
+// Sử dụng res.render thay vì res.sendFile
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.render('index');
 });
 
 // Start the server
