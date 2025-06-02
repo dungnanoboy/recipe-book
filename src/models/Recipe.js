@@ -30,9 +30,9 @@ const recipeSchema = new mongoose.Schema({
   imageUrls: [{
     type: String
   }],
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category'
+  category_Id: {  // Sửa từ categoryId thành category_Id
+    type: Number,
+    required: true
   },
   tags: [{
     type: String

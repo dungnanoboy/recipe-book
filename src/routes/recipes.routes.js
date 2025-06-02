@@ -6,21 +6,33 @@ const User = require('../models/User');
 
 router.get('/recipes', async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 6;
+    const skip = (page - 1) * limit;
+    
+    // Lấy category từ query params
     const categoryId = req.query.category;
     let recipeQuery = {};
     
     if (categoryId) {
+      // Đảm bảo categoryId là số
       recipeQuery.category_Id = parseInt(categoryId);
+      console.log('Filtering by category:', categoryId); // Debug log
     }
 
-    const [categories, recipes, topUsers] = await Promise.all([
-      Category.find(), // Lấy tất cả categories
-      Recipe.find(recipeQuery).sort({ createdAt: -1 }), // Lấy recipes theo filter
-      User.aggregate([ // Lấy top users có nhiều công thức
+    // Thực hiện queries
+    const [categories, recipes, totalRecipes, topUsers] = await Promise.all([
+      Category.find().sort({ id: 1 }), // Sắp xếp categories theo id
+      Recipe.find(recipeQuery)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Recipe.countDocuments(recipeQuery),
+      User.aggregate([
         {
           $lookup: {
             from: 'recipes',
-            localField: '_id',
+            localField: 'id',
             foreignField: 'userId',
             as: 'recipes'
           }
@@ -37,9 +49,25 @@ router.get('/recipes', async (req, res) => {
       ])
     ]);
 
-    res.render('recipes', { categories, recipes, topUsers });
+    // Debug logs
+    console.log('Query:', recipeQuery);
+    console.log('Total recipes:', totalRecipes);
+    console.log('Recipes found:', recipes.length);
+
+    const totalPages = Math.ceil(totalRecipes / limit);
+
+    res.render('recipes', {
+      recipes,
+      categories,
+      currentPage: page,
+      totalPages,
+      totalRecipes,
+      categoryId: categoryId || '', // Truyền categoryId về template
+      topUsers
+    });
+
   } catch (error) {
-    console.error(error);
+    console.error('Error in recipes route:', error);
     res.status(500).send('Server Error');
   }
 });

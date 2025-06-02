@@ -43,6 +43,49 @@
                     </div>
                 <% }) %>
             </div>
+
+            <!-- Pagination Section -->
+            <div class="pagination-wrapper mt-4">
+                <% if (totalRecipes > 0) { %>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <% if (currentPage > 1) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="/recipes?page=1<%= categoryId ? '&category=' + categoryId : '' %>">
+                                        First
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="/recipes?page=<%= currentPage - 1 %><%= categoryId ? '&category=' + categoryId : '' %>">
+                                        Previous
+                                    </a>
+                                </li>
+                            <% } %>
+                            
+                            <% for(let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                    <a class="page-link" href="/recipes?page=<%= i %><%= categoryId ? '&category=' + categoryId : '' %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                            <% } %>
+                            
+                            <% if (currentPage < totalPages) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="/recipes?page=<%= currentPage + 1 %><%= categoryId ? '&category=' + categoryId : '' %>">
+                                        Next
+                                    </a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="/recipes?page=<%= totalPages %><%= categoryId ? '&category=' + categoryId : '' %>">
+                                        Last
+                                    </a>
+                                </li>
+                            <% } %>
+                        </ul>
+                    </nav>
+                <% } %>
+            </div>
         </div>
 
         <!-- Top Users Section -->
@@ -122,6 +165,29 @@
     align-items: center;
     justify-content: center;
     font-size: 12px;
+}
+
+/* Pagination styles */
+.pagination .page-link {
+    color: #40ba37;
+    padding: 8px 16px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #40ba37;
+    border-color: #40ba37;
+    color: white;
+}
+
+.pagination .page-link:hover {
+    color: #fff;
+    background-color: #40ba37;
+    border-color: #40ba37;
+}
+
+.pagination-wrapper {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
 }
 </style>
 
