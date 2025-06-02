@@ -1,31 +1,128 @@
 <%- include('partials/header') %>
 
-<div class="container">
-    <div class="row">
-        <% recipes.forEach(recipe => { %>
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="single-best-receipe-area mb-30">
-                    <img src="<%= recipe.imageUrls %>" alt="<%= recipe.title %>">
-                    <div class="receipe-content">
-                        <a href="/recipe/<%= recipe._id %>">
-                            <h5><%= recipe.title %></h5>
-                        </a>
-                        <div class="ratings">
-                            <% for(let i = 0; i < Math.floor(recipe.rating); i++) { %>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                            <% } %>
-                            <% if(recipe.rating % 1 !== 0) { %>
-                                <i class="fa fa-star-half-o" aria-hidden="true"></i>
-                            <% } %>
-                            <% for(let i = Math.ceil(recipe.rating); i < 5; i++) { %>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            <% } %>
-                        </div>
+<!-- Categories Section -->
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <% categories.forEach(category => { %>
+            <div class="col-3 col-md-1 text-center mb-4">
+                <a href="/recipes?category=<%= category.id %>" class="category-icon">
+                    <div class="icon-wrapper">
+                        <!-- Thay thế icon tương ứng cho từng category -->
+                        <img src="<%= category.icon %>" alt="<%= category.name %>">
                     </div>
-                </div>
+                    <p class="mt-2"><%= category.name %></p>
+                </a>
             </div>
         <% }) %>
     </div>
 </div>
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Recipe List Section -->
+        <div class="col-md-8">
+            <h3 class="mb-4">CÔNG THỨC TỪ CỘNG ĐỒNG</h3>
+            <div class="row">
+                <% recipes.forEach(recipe => { %>
+                    <div class="col-12 col-sm-6 mb-4">
+                        <div class="recipe-card position-relative">
+                            <img src="<%= recipe.imageUrls[0] || '/img/default-recipe.jpg' %>" alt="<%= recipe.title %>" class="w-100">
+                            <div class="recipe-info p-3">
+                                <a href="/recipe/<%= recipe._id %>">
+                                    <h5><%= recipe.title %></h5>
+                                </a>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted"><%= recipe.cookingTimeMinutes %> phút</small>
+                                    <div class="views">
+                                        <i class="fa fa-heart-o"></i>
+                                        <span><%= recipe.views %></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+        <!-- Top Users Section -->
+        <div class="col-md-4">
+            <h3 class="mb-4">TOP THÀNH VIÊN</h3>
+            <div class="top-users">
+                <% topUsers.forEach((user, index) => { %>
+                    <div class="user-item d-flex align-items-center mb-3">
+                        <div class="user-avatar">
+                            <img src="<%= user.avatarUrl %>" alt="<%= user.username %>" class="rounded-circle">
+                            <span class="rank-badge"><%= index + 1 %></span>
+                        </div>
+                        <div class="user-info ml-3">
+                            <h6><%= user.username %></h6>
+                            <small class="text-muted"><%= user.recipeCount %> công thức</small>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add custom CSS -->
+<style>
+.category-icon {
+    display: block;
+    text-decoration: none;
+    color: #333;
+}
+
+.icon-wrapper {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-wrapper img {
+    width: 35px;
+    height: 35px;
+}
+
+.recipe-card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.user-avatar {
+    position: relative;
+    width: 50px;
+    height: 50px;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.rank-badge {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background: #ff6b6b;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+</style>
 
 <%- include('partials/footer') %>
