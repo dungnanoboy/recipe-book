@@ -4,6 +4,7 @@ const connectDB = require('./config/db');
 
 // Import routes 
 const indexRouter = require('./routes/index.routes');
+const recipesRouter = require('./routes/recipes.routes');
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Use routes
 app.use('/', indexRouter);
+app.use('/', recipesRouter);
 
 // Sử dụng res.render thay vì res.sendFile
 app.get('/', (req, res) => {

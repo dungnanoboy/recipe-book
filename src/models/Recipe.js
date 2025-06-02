@@ -1,22 +1,60 @@
 const mongoose = require('mongoose');
 
 const recipeSchema = new mongoose.Schema({
-  title: String,
-  ingredients: [
-    {
-      ingredient_id: Number, // tham chiếu theo _id của ingredients
-      amount: Number,        // số lượng nguyên liệu
+  title: {
+    type: String,
+    required: true
+  },
+  ingredients: [{
+    ingredient_id: {
+      type: Number,
+      required: true
     },
-  ],
-  instructions: [String],     // các bước nấu ăn
-  cookingTimeMinutes: Number, // thời gian nấu
-  servings: Number,           // số khẩu phần
-  imageUrls: [String],        // ảnh (nếu có)
-  category_Id: Number,        // tham chiếu đến Category
-  tags: [String],             // ví dụ: ["phở", "món nước"]
-  views: Number,
-  createdAt: Date,
-  updatedAt: Date,
+    amount: {
+      type: Number,
+      required: true
+    }
+  }],
+  instructions: [{
+    type: String,
+    required: true
+  }],
+  cookingTimeMinutes: {
+    type: Number,
+    required: true
+  },
+  servings: {
+    type: Number,
+    required: true
+  },
+  imageUrls: [{
+    type: String
+  }],
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category'
+  },
+  tags: [{
+    type: String
+  }],
+  views: {
+    type: Number,
+    default: 0
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+// Middleware để tự động cập nhật updatedAt
+recipeSchema.pre('save', function(next) {
+  this.updatedAt = new Date();
+  next();
 });
 
 const Recipe = mongoose.model('Recipe', recipeSchema);

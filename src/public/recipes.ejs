@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+
+<div class="container">
+    <div class="row">
+        <% recipes.forEach(recipe => { %>
+            <div class="col-12 col-sm-6 col-lg-4">
+                <div class="single-best-receipe-area mb-30">
+                    <img src="<%= recipe.imageUrls %>" alt="<%= recipe.title %>">
+                    <div class="receipe-content">
+                        <a href="/recipe/<%= recipe._id %>">
+                            <h5><%= recipe.title %></h5>
+                        </a>
+                        <div class="ratings">
+                            <% for(let i = 0; i < Math.floor(recipe.rating); i++) { %>
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                            <% } %>
+                            <% if(recipe.rating % 1 !== 0) { %>
+                                <i class="fa fa-star-half-o" aria-hidden="true"></i>
+                            <% } %>
+                            <% for(let i = Math.ceil(recipe.rating); i < 5; i++) { %>
+                                <i class="fa fa-star-o" aria-hidden="true"></i>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
