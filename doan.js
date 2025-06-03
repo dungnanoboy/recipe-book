@@ -10,7 +10,8 @@ db.users.insertOne(
   password: "password_here",
   avatarUrl: "/img/user-img/Lukey.png",
   bio: "Tôi yêu ẩm thực Việt!",
-  joinedAt: new Date()
+  joinedAt: new Date(),
+  role: "user"
 });
 
 db.users.insertMany([
@@ -21,7 +22,8 @@ db.users.insertMany([
     password: "hashed_password",
     avatarUrl: "/img/user-img/Lukey.png",
     bio: "Đam mê món Việt truyền thống",
-    joinedAt: new Date()
+    joinedAt: new Date(),
+    role: "user"
   },
   {
     id: 3,
@@ -30,7 +32,8 @@ db.users.insertMany([
     password: "hashed_password",
     avatarUrl: "/img/user-img/Lukey.png",
     bio: "Ăn chay healthy, sống xanh mỗi ngày",
-    joinedAt: new Date()
+    joinedAt: new Date(),
+    role: "user"
   },
   {
     id: 4,
@@ -39,9 +42,22 @@ db.users.insertMany([
     password: "hashed_password",
     avatarUrl: "/img/user-img/Lukey.png",
     bio: "Nấu ăn là đam mê",
-    joinedAt: new Date()
+    joinedAt: new Date(),
+    role: "user"
   }
 ]);
+
+db.users.insertOne({
+  id: 5,
+  username: "adminmaster",
+  email: "admin@example.com",
+  password: "secure_admin_password", // nhớ mã hóa nếu dùng thật
+  avatarUrl: "/img/user-img/admin.png",
+  bio: "Quản trị hệ thống công thức nấu ăn",
+  joinedAt: new Date(),
+  role: "admin"
+});
+
 
 db.createCollection("categories")
 
