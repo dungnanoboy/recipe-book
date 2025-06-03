@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const Category = require('../models/Category');
-const Ingredient = require('../models/Ingredient');
-const Recipe = require('../models/Recipe');
-const User = require('../models/User');
+const categoryController = require('../controllers/categoryController');
+const recipeController = require('../controllers/recipeController');
+const ingredientController = require('../controllers/ingredientController');
+const userController = require('../controllers/userController');
 
 // Middleware kiểm tra quyền admin
 const isAdmin = (req, res, next) => {
@@ -14,70 +14,32 @@ const isAdmin = (req, res, next) => {
   }
 };
 
-// Route hiển thị bảng categories
-router.get('/category-table', isAdmin, async (req, res) => {
-  try {
-    const categories = await Category.find().sort({ id: 1 });
-    res.render('admin/category-table', { 
-      categories,
-      title: 'Quản lý danh mục công thức'
-    });
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    res.status(500).send('Server Error');
-  }
-});
+// Category routes
+router.get('/category-table', isAdmin, categoryController.getAllCategories);
+router.get('/category/:id', isAdmin, categoryController.getCategoryById);
+router.post('/category/add', isAdmin, categoryController.addCategory);
+router.post('/category/edit', isAdmin, categoryController.editCategory);
+router.delete('/category/delete/:id', isAdmin, categoryController.deleteCategory);
 
-// Route hiển thị bảng ingredients 
-router.get('/ingredient-table', isAdmin, async (req, res) => {
-  try {
-    const ingredients = await Ingredient.find().sort({ _id: 1 });
-    res.render('admin/ingredient-table', {
-      ingredients,
-      title: 'Quản lý nguyên liệu'
-    });
-  } catch (error) {
-    console.error('Error fetching ingredients:', error);
-    res.status(500).send('Server Error');
-  }
-});
+// Recipe routes
+router.get('/recipe-table', isAdmin, recipeController.getAllRecipes);
+router.get('/recipe/:id', isAdmin, recipeController.getRecipeById);
+router.post('/recipe/add', isAdmin, recipeController.addRecipe);
+router.post('/recipe/edit', isAdmin, recipeController.editRecipe);
+router.delete('/recipe/delete/:id', isAdmin, recipeController.deleteRecipe);
 
-// Route hiển thị bảng recipes
-router.get('/recipe-table', isAdmin, async (req, res) => {
-  try {
-    // Lấy recipes với populate để có thông tin chi tiết
-    const recipes = await Recipe.find().sort({ createdAt: -1 });
-    
-    // Lấy categories để map tên category
-    const categories = await Category.find();
-    const categoryMap = {};
-    categories.forEach(cat => {
-      categoryMap[cat.id] = cat.name;
-    });
+// Ingredient routes
+router.get('/ingredient-table', isAdmin, ingredientController.getAllIngredients);
+router.get('/ingredient/:id', isAdmin, ingredientController.getIngredientById);
+router.post('/ingredient/add', isAdmin, ingredientController.addIngredient);
+router.post('/ingredient/edit', isAdmin, ingredientController.editIngredient);
+router.delete('/ingredient/delete/:id', isAdmin, ingredientController.deleteIngredient);
 
-    res.render('admin/recipe-table', {
-      recipes,
-      categoryMap,
-      title: 'Quản lý công thức'
-    });
-  } catch (error) {
-    console.error('Error fetching recipes:', error);
-    res.status(500).send('Server Error');
-  }
-});
-
-// Route hiển thị bảng users
-router.get('/user-table', isAdmin, async (req, res) => {
-  try {
-    const users = await User.find().sort({ id: 1 });
-    res.render('admin/user-table', {
-      users,
-      title: 'Quản lý người dùng'
-    });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).send('Server Error');
-  }
-});
+// User routes
+router.get('/user-table', isAdmin, userController.getAllUsers);
+router.get('/user/:id', isAdmin, userController.getUserById);
+router.post('/user/add', isAdmin, userController.addUser);
+router.post('/user/edit', isAdmin, userController.editUser);
+router.delete('/user/delete/:id', isAdmin, userController.deleteUser);
 
 module.exports = router;

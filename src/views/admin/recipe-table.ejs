@@ -70,4 +70,185 @@
   </section>
 </main>
 
+<!-- Add Recipe Modal -->
+<div class="modal fade" id="addRecipeModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Thêm công thức mới</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/admin/recipe/add" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Tên công thức</label>
+            <input type="text" class="form-control" name="title" required>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Danh mục</label>
+            <select class="form-select" name="category_Id" required>
+              <option value="">Chọn danh mục</option>
+              <% categories.forEach(category => { %>
+                <option value="<%= category.id %>"><%= category.name %></option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Mô tả</label>
+            <textarea class="form-control" name="description" rows="3" required></textarea>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Thời gian nấu (phút)</label>
+              <input type="number" class="form-control" name="cookingTimeMinutes" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Khẩu phần</label>
+              <input type="number" class="form-control" name="servings" required>
+            </div>
+          </div>
+
+          <div id="ingredientList" class="mb-3">
+            <label class="form-label">Nguyên liệu</label>
+            <div class="ingredient-item mb-2">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Tên nguyên liệu">
+                <input type="text" class="form-control" placeholder="Số lượng">
+                <input type="text" class="form-control" placeholder="Đơn vị">
+                <button type="button" class="btn btn-danger" onclick="removeIngredient(this)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-success" onclick="addIngredient()">
+              <i class="bi bi-plus"></i> Thêm nguyên liệu
+            </button>
+          </div>
+
+          <div id="instructionList" class="mb-3">
+            <label class="form-label">Các bước thực hiện</label>
+            <div class="instruction-item mb-2">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Bước 1">
+                <button type="button" class="btn btn-danger" onclick="removeInstruction(this)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-success" onclick="addInstruction()">
+              <i class="bi bi-plus"></i> Thêm bước
+            </button>
+          </div>
+
+          <input type="hidden" name="ingredients" id="ingredientsJson">
+          <input type="hidden" name="instructions" id="instructionsJson">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary" onclick="prepareFormData()">Thêm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Recipe Modal - Similar structure as Add Modal -->
+<!-- Delete Recipe Modal -->
+
+<script>
+function addIngredient() {
+  const template = `
+    <div class="ingredient-item mb-2">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Tên nguyên liệu">
+        <input type="text" class="form-control" placeholder="Số lượng">
+        <input type="text" class="form-control" placeholder="Đơn vị">
+        <button type="button" class="btn btn-danger" onclick="removeIngredient(this)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+  `;
+  document.querySelector('#ingredientList').insertAdjacentHTML('beforeend', template);
+}
+
+function addInstruction() {
+  const items = document.querySelectorAll('.instruction-item').length + 1;
+  const template = `
+    <div class="instruction-item mb-2">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Bước ${items}">
+        <button type="button" class="btn btn-danger" onclick="removeInstruction(this)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+  `;
+  document.querySelector('#instructionList').insertAdjacentHTML('beforeend', template);
+}
+
+function removeIngredient(btn) {
+  btn.closest('.ingredient-item').remove();
+}
+
+function removeInstruction(btn) {
+  btn.closest('.instruction-item').remove();
+}
+
+function prepareFormData() {
+  // Collect ingredients
+  const ingredients = [];
+  document.querySelectorAll('.ingredient-item').forEach(item => {
+    const inputs = item.querySelectorAll('input');
+    ingredients.push({
+      name: inputs[0].value,
+      amount: inputs[1].value,
+      unit: inputs[2].value
+    });
+  });
+  document.getElementById('ingredientsJson').value = JSON.stringify(ingredients);
+
+  // Collect instructions
+  const instructions = [];
+  document.querySelectorAll('.instruction-item input').forEach(input => {
+    if(input.value.trim()) {
+      instructions.push(input.value.trim());
+    }
+  });
+  document.getElementById('instructionsJson').value = JSON.stringify(instructions);
+}
+
+let deleteId = null;
+
+function editRecipe(id) {
+  fetch(`/admin/recipe/${id}`)
+    .then(response => response.json())
+    .then(recipe => {
+      // Populate edit form
+      document.getElementById('editRecipeId').value = recipe._id;
+      // ... populate other fields ...
+      new bootstrap.Modal(document.getElementById('editRecipeModal')).show();
+    });
+}
+
+function deleteRecipe(id) {
+  deleteId = id;
+  new bootstrap.Modal(document.getElementById('deleteRecipeModal')).show();
+}
+
+document.getElementById('confirmDelete').addEventListener('click', function() {
+  if (deleteId) {
+    fetch(`/admin/recipe/delete/${deleteId}`, { method: 'DELETE' })
+      .then(response => {
+        if (response.ok) {
+          window.location.reload();
+        }
+      });
+  }
+});
+</script>
+
 <%- include('partials/footer') %>

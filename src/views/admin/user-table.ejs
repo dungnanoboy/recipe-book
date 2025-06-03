@@ -76,4 +76,134 @@
   </section>
 </main>
 
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Thêm người dùng mới</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/admin/user/add" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Tên người dùng</label>
+            <input type="text" class="form-control" name="username" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Mật khẩu</label>
+            <input type="password" class="form-control" name="password" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Vai trò</label>
+            <select class="form-select" name="role">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary">Thêm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Sửa thông tin người dùng</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="editUserForm" action="/admin/user/edit" method="POST">
+        <input type="hidden" id="editUserId" name="id">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Tên người dùng</label>
+            <input type="text" class="form-control" id="editUsername" name="username" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" id="editEmail" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Mật khẩu</label>
+            <input type="password" class="form-control" name="password" placeholder="Để trống nếu không thay đổi">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Vai trò</label>
+            <select class="form-select" id="editRole" name="role">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary">Cập nhật</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa người dùng này không?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let deleteId = null;
+
+function editUser(id) {
+  fetch(`/admin/user/${id}`)
+    .then(response => response.json())
+    .then(user => {
+      document.getElementById('editUserId').value = user.id;
+      document.getElementById('editUsername').value = user.username;
+      document.getElementById('editEmail').value = user.email;
+      document.getElementById('editRole').value = user.role;
+      new bootstrap.Modal(document.getElementById('editUserModal')).show();
+    });
+}
+
+function deleteUser(id) {
+  deleteId = id;
+  new bootstrap.Modal(document.getElementById('deleteUserModal')).show();
+}
+
+document.getElementById('confirmDelete').addEventListener('click', function() {
+  if (deleteId) {
+    fetch(`/admin/user/delete/${deleteId}`, { method: 'DELETE' })
+      .then(response => {
+        if (response.ok) {
+          window.location.reload();
+        }
+      });
+  }
+});
+</script>
+
 <%- include('partials/footer') %>

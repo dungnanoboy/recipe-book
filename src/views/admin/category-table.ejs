@@ -63,4 +63,112 @@
   </section>
 </main>
 
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Thêm danh mục mới</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/admin/category/add" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="categoryName" class="form-label">Tên danh mục</label>
+            <input type="text" class="form-control" id="categoryName" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="categoryIcon" class="form-label">Icon URL</label>
+            <input type="text" class="form-control" id="categoryIcon" name="icon" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary">Thêm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Sửa danh mục</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="editCategoryForm" action="/admin/category/edit" method="POST">
+        <input type="hidden" id="editCategoryId" name="id">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="editCategoryName" class="form-label">Tên danh mục</label>
+            <input type="text" class="form-control" id="editCategoryName" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="editCategoryIcon" class="form-label">Icon URL</label>
+            <input type="text" class="form-control" id="editCategoryIcon" name="icon" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary">Cập nhật</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Category Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa danh mục này không?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add JavaScript for handling modals -->
+<script>
+let deleteId = null;
+
+function editCategory(id) {
+  fetch(`/admin/category/${id}`)
+    .then(response => response.json())
+    .then(category => {
+      document.getElementById('editCategoryId').value = category.id;
+      document.getElementById('editCategoryName').value = category.name;
+      document.getElementById('editCategoryIcon').value = category.icon;
+      new bootstrap.Modal(document.getElementById('editCategoryModal')).show();
+    });
+}
+
+function deleteCategory(id) {
+  deleteId = id;
+  new bootstrap.Modal(document.getElementById('deleteCategoryModal')).show();
+}
+
+document.getElementById('confirmDelete').addEventListener('click', function() {
+  if (deleteId) {
+    fetch(`/admin/category/delete/${deleteId}`, { method: 'DELETE' })
+      .then(response => {
+        if (response.ok) {
+          window.location.reload();
+        }
+      });
+  }
+});
+</script>
+
 <%- include('partials/footer') %>

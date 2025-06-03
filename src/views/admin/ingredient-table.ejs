@@ -66,4 +66,121 @@
 
 </main>
 
+<!-- Add Ingredient Modal -->
+<div class="modal fade" id="addIngredientModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Thêm nguyên liệu mới</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/admin/ingredient/add" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="ingredientName" class="form-label">Tên nguyên liệu</label>
+            <input type="text" class="form-control" id="ingredientName" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="ingredientUnit" class="form-label">Đơn vị</label>
+            <input type="text" class="form-control" id="ingredientUnit" name="unit" required>
+          </div>
+          <div class="mb-3">
+            <label for="ingredientCategory" class="form-label">Loại</label>
+            <input type="text" class="form-control" id="ingredientCategory" name="category" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary">Thêm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Ingredient Modal -->
+<div class="modal fade" id="editIngredientModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Sửa nguyên liệu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="editIngredientForm" action="/admin/ingredient/edit" method="POST">
+        <input type="hidden" id="editIngredientId" name="id">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="editIngredientName" class="form-label">Tên nguyên liệu</label>
+            <input type="text" class="form-control" id="editIngredientName" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="editIngredientUnit" class="form-label">Đơn vị</label>
+            <input type="text" class="form-control" id="editIngredientUnit" name="unit" required>
+          </div>
+          <div class="mb-3">
+            <label for="editIngredientCategory" class="form-label">Loại</label>
+            <input type="text" class="form-control" id="editIngredientCategory" name="category" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="submit" class="btn btn-primary">Cập nhật</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Ingredient Modal -->
+<div class="modal fade" id="deleteIngredientModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Xác nhận xóa</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Bạn có chắc chắn muốn xóa nguyên liệu này không?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-danger" id="confirmDelete">Xóa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add JavaScript for handling modals -->
+<script>
+let deleteId = null;
+
+function editIngredient(id) {
+  fetch(`/admin/ingredient/${id}`)
+    .then(response => response.json())
+    .then(ingredient => {
+      document.getElementById('editIngredientId').value = ingredient._id;
+      document.getElementById('editIngredientName').value = ingredient.name;
+      document.getElementById('editIngredientUnit').value = ingredient.unit;
+      document.getElementById('editIngredientCategory').value = ingredient.category;
+      new bootstrap.Modal(document.getElementById('editIngredientModal')).show();
+    });
+}
+
+function deleteIngredient(id) {
+  deleteId = id;
+  new bootstrap.Modal(document.getElementById('deleteIngredientModal')).show();
+}
+
+document.getElementById('confirmDelete').addEventListener('click', function() {
+  if (deleteId) {
+    fetch(`/admin/ingredient/delete/${deleteId}`, { method: 'DELETE' })
+      .then(response => {
+        if (response.ok) {
+          window.location.reload();
+        }
+      });
+  }
+});
+</script>
+
 <%- include('partials/footer') %>
