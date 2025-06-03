@@ -1,0 +1,171 @@
+<%- include('partials/header') %>
+
+<!-- ##### Breadcumb Area Start ##### -->
+    <div class="breadcumb-area bg-img bg-overlay" style="background-image: url('/img/bg-img/breadcumb3.jpg');">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12">
+                    <div class="breadcumb-text text-center">
+                        <h2><%= recipe.title %></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ##### Breadcumb Area End ##### -->
+
+    <div class="receipe-post-area section-padding-80">
+        <!-- Receipe Content Area -->
+        <div class="receipe-content-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-md-8">
+                        <div class="receipe-headline my-5">
+                            <span><%= new Date(recipe.createdAt).toLocaleDateString('vi-VN') %></span>
+                            <h2><%= recipe.title %></h2>
+                            <div class="receipe-duration">
+                                <h6>Thời gian nấu: <%= recipe.cookingTimeMinutes %> phút</h6>
+                                <h6>Khẩu phần: <%= recipe.servings %> người</h6>
+                                <h6>Lượt xem: <%= recipe.views %></h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="receipe-ratings text-right my-5">
+                            <div class="ratings">
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                                <i class="fa fa-star" aria-hidden="true"></i>
+                                <i class="fa fa-star-o" aria-hidden="true"></i>
+                            </div>
+                            <a href="#" class="btn delicious-btn"><%= recipe.categoryName %></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recipe Images -->
+                <div class="row mb-5">
+                    <div class="col-12">
+                        <div class="receipe-slider owl-carousel">
+                            <% recipe.imageUrls.forEach(imageUrl => { %>
+                                <img src="<%= imageUrl %>" alt="<%= recipe.title %>" class="img-fluid">
+                            <% }) %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-8">
+                        <!-- Preparation Steps -->
+                        <% recipe.instructions.forEach((instruction, index) => { %>
+                            <div class="single-preparation-step d-flex">
+                                <h4><%= (index + 1).toString().padStart(2, '0') %>.</h4>
+                                <p><%= instruction %></p>
+                            </div>
+                        <% }) %>
+                    </div>
+
+                    <!-- Ingredients -->
+                    <div class="col-12 col-lg-4">
+                        <div class="ingredients">
+                            <h4>Nguyên liệu</h4>
+                            <% recipe.ingredients.forEach((ingredient, index) => { %>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck<%= index %>">
+                                    <label class="custom-control-label" for="customCheck<%= index %>">
+                                        <%= ingredient.amount %> <%= ingredient.unit %> <%= ingredient.name %>
+                                    </label>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="tags">
+                            <% recipe.tags.forEach(tag => { %>
+                                <span class="badge badge-primary mr-2"><%= tag %></span>
+                            <% }) %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Author Info -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="author-info">
+                            <h4>Được đăng bởi: <%= recipe.authorName %></h4>
+                            <p>Ngày đăng: <%= new Date(recipe.createdAt).toLocaleDateString('vi-VN') %></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="section-heading text-left">
+                            <h3>Bình luận</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="contact-form-area">
+                            <form action="#" method="post">
+                                <div class="row">
+                                    <div class="col-12 col-lg-6">
+                                        <input type="text" class="form-control" id="name" placeholder="Tên của bạn">
+                                    </div>
+                                    <div class="col-12 col-lg-6">
+                                        <input type="email" class="form-control" id="email" placeholder="Email">
+                                    </div>
+                                    <div class="col-12">
+                                        <textarea name="message" class="form-control" id="message" cols="30" rows="10" placeholder="Nội dung bình luận"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="btn delicious-btn mt-30" type="submit">Gửi bình luận</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<style>
+.ingredients {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+.custom-control-label {
+    font-size: 14px;
+    margin-left: 5px;
+}
+.single-preparation-step {
+    margin-bottom: 20px;
+}
+.single-preparation-step h4 {
+    min-width: 40px;
+    margin-right: 15px;
+}
+.tags .badge {
+    font-size: 12px;
+    padding: 5px 10px;
+    background-color: #40ba37;
+}
+.author-info {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+</style>
+
+<%- include('partials/footer') %>

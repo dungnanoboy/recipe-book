@@ -8,17 +8,20 @@ const recipesRouter = require('./routes/recipes.routes');
 
 const app = express();
 
-// Cấu hình EJS
+// Cấu hình EJS đúng
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'public'));
+app.set('views', path.join(__dirname, 'views')); // ✅ Đặt đúng thư mục views
 
 // Connect to the database
 connectDB();
 
-// Serve static files from the 'public' directory inside 'src'
+// Phục vụ file tĩnh từ thư mục public
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/css', express.static(path.join(__dirname, 'public/css')));
+app.use('/js', express.static(path.join(__dirname, 'public/js')));
+app.use('/img', express.static(path.join(__dirname, 'public/img')));
 
-// Use routes
+// Sau đó mới đến các routes
 app.use('/', indexRouter);
 app.use('/', recipesRouter);
 

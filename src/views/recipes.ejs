@@ -26,7 +26,9 @@
                 <% recipes.forEach(recipe => { %>
                     <div class="col-12 col-sm-6 mb-4">
                         <div class="recipe-card position-relative">
-                            <img src="<%= recipe.imageUrls[0] || '/img/default-recipe.jpg' %>" alt="<%= recipe.title %>" class="w-100">
+                            <a href="/recipe/<%= recipe._id %>">
+                                <img src="<%= recipe.imageUrls[0] || '/img/default-recipe.jpg' %>" alt="<%= recipe.title %>" class="w-100">
+                            </a>
                             <div class="recipe-info p-3">
                                 <a href="/recipe/<%= recipe._id %>">
                                     <h5><%= recipe.title %></h5>

@@ -3,6 +3,7 @@ const router = express.Router();
 const Recipe = require('../models/Recipe');
 const Category = require('../models/Category');
 const User = require('../models/User');
+const Ingredient = require('../models/Ingredient'); // Import Ingredient model
 
 router.get('/recipes', async (req, res) => {
   try {
@@ -50,9 +51,9 @@ router.get('/recipes', async (req, res) => {
     ]);
 
     // Debug logs
-    console.log('Query:', recipeQuery);
-    console.log('Total recipes:', totalRecipes);
-    console.log('Recipes found:', recipes.length);
+    //console.log('Query:', recipeQuery);
+    //console.log('Total recipes:', totalRecipes);
+    //console.log('Recipes found:', recipes.length);
 
     const totalPages = Math.ceil(totalRecipes / limit);
 
@@ -68,6 +69,52 @@ router.get('/recipes', async (req, res) => {
 
   } catch (error) {
     console.error('Error in recipes route:', error);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Thêm route cho recipe detail
+router.get('/recipe/:id', async (req, res) => {
+  try {
+    const recipe = await Recipe.findById(req.params.id);
+    if (!recipe) {
+      return res.status(404).send('Không tìm thấy công thức');
+    }
+
+    // Tăng số lượt xem
+    recipe.views += 1;
+    await recipe.save();
+
+    // Lấy chi tiết nguyên liệu
+    const ingredientDetails = await Promise.all(
+      recipe.ingredients.map(async (ing) => {
+        const ingredient = await Ingredient.findOne({ _id: ing.ingredient_id });
+        return {
+          ...ing.toObject(),
+          name: ingredient ? ingredient.name : 'Unknown',
+          unit: ingredient ? ingredient.unit : ''
+        };
+      })
+    );
+
+    // Lấy thông tin category và user
+    const [category, user] = await Promise.all([
+      Category.findOne({ id: recipe.category_Id }),
+      User.findOne({ id: recipe.userId })
+    ]);
+
+    res.render('receipe-post', {
+      recipe: {
+        ...recipe.toObject(),
+        ingredients: ingredientDetails,
+        categoryName: category ? category.name : 'Uncategorized',
+        authorName: user ? user.username : 'Unknown User',
+        createdAt: recipe.createdAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Error in recipe detail:', error);
     res.status(500).send('Server Error');
   }
 });
